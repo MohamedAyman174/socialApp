@@ -12,6 +12,8 @@ const authRouter = Router();
 authRouter.post("/signup", Validation(authValidation.signUpSchema), authService.signUp); 
 authRouter.post("/signin", Validation(authValidation.signInSchema), authService.signIn);
 authRouter.post("/confirm-email", Validation(authValidation.confirmEmailSchema), authService.confirmEmail);
+authRouter.post("/resend-otp", Validation(authValidation.resendOtpSchema), authService.resendOtp);
+authRouter.post("/google", Validation(authValidation.googleLoginSchema), authService.googleLogin);
 authRouter.get("/profile/:id", authService.getProfile);
 
 

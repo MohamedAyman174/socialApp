@@ -9,6 +9,7 @@ import { AppError } from "./common/utils/global-err-handler";
 import authRouter from "./modules/auth/auth.controller";
 import { checkDBConnection } from "./DB/connectionDB";
 import RedisService from "./common/service/redis.service";
+import uploadRouter from "./modules/upload/upload.controller";
 
 const app: express.Application = express();
 const port = PORT;
@@ -41,6 +42,7 @@ const bootstrap = () => {
 
     
     app.use("/auth", authRouter);  
+    app.use("/upload", uploadRouter);
 
     app.use("{/*demo}", (req: Request, res: Response, next: NextFunction) => {
        throw new AppError(`URL ${req.originalUrl} with method ${req.method} not found`, 404);

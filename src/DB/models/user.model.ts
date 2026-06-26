@@ -1,5 +1,6 @@
-import { GenderEnum, RoleEnum } from "../../common/enum/user.enum";
+import { GenderEnum, RoleEnum, ProviderEnum  } from "../../common/enum/user.enum";
 import mongoose, { Types } from "mongoose";
+import { hash } from "../../common/utils/security/hash";
 
 
 export interface IUser {
@@ -8,12 +9,14 @@ export interface IUser {
     lastName: string;
     userName: string;
     email: string;
-    password: string;
+    password?: string;
     age: number;
     phone?: string;
-address?: string;
-gender?: GenderEnum;
+    address?: string;
+    gender?: GenderEnum;
     role?: RoleEnum;
+    provider?: ProviderEnum;
+    profilePic?: string;
     confirmed?: boolean;
     createdAt: Date;
     updatedAt: Date;
@@ -38,10 +41,19 @@ const userSchema = new mongoose.Schema<IUser>(
             type: String,
             required: true,
             unique: true,
+            
+            validate: {
+                validator: function (value: string) {
+                    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+                },
+                message: (props: any) => `${props.value} is not a valid email address`,
+            },
         },
         password: {
             type: String,
-            required: true,
+            required: function (this: IUser) {
+                return this.provider === ProviderEnum.system || !this.provider;
+            },
             minlength: 6,
             maxlength: 50,
         },
@@ -64,6 +76,14 @@ const userSchema = new mongoose.Schema<IUser>(
             enum: Object.values(RoleEnum),
             default: RoleEnum.user,
         },
+        provider: {
+            type: String,
+            enum: Object.values(ProviderEnum),
+            default: ProviderEnum.system,
+        },
+        profilePic: {
+            type: String,
+        },
         confirmed: {
             type: Boolean,
             default: false,
@@ -84,5 +104,37 @@ userSchema.virtual('fullName').get(function () {
     this.set({ firstName: value.split(' ')[0], lastName: value.split(' ')[1] });
 });
 
-const UserModel = mongoose.model<IUser>('User', userSchema) || mongoose.models.User;
+userSchema.pre('save', function (next) {
+    if (this.isModified('password') && this.password) {
+        this.password = hash({ plain_text: this.password });
+    }
+    
+});
+
+
+
+userSchema.post('save', function (doc) {
+    console.log(`User document saved successfully: ${doc.email}`);
+});
+
+userSchema.pre(/^find/, function (this: mongoose.Query<any, IUser>, next) {
+    const projection = this.projection();
+    if (!projection || !('password' in projection)) {
+        this.select('-password');
+    }
+    
+});
+
+userSchema.pre('insertMany', async function (next, docs) {
+    if (Array.isArray(docs)) {
+        for (const doc of docs) {
+            if (doc.password && (doc.provider === ProviderEnum.system || !doc.provider)) {
+                doc.password = hash({ plain_text: doc.password });
+            }
+        }
+    }
+    next();
+});
+
+const UserModel = mongoose.models.User || mongoose.model<IUser>('User', userSchema);
 export default UserModel;

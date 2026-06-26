@@ -1,4 +1,3 @@
-
 import * as z from "zod";
 
 import { GenderEnum } from "../../common/enum/user.enum";
@@ -36,16 +35,25 @@ export const signInSchema = z.object({
     
 })
 
+export const resendOtpSchema = z.object({
+    email: z.string().email(),
+})
 
-
+export const googleLoginSchema = z.object({
+    idToken: z.string().min(10),
+})
 
 
 
 export type ISignUpType = z.infer<typeof signUpSchema>;
 export type IConfirmEmailType = z.infer<typeof confirmEmailSchema>;
 export type ISignInType = z.infer<typeof signInSchema>;
+export type IResendOtpType = z.infer<typeof resendOtpSchema>;
+export type IGoogleLoginType = z.infer<typeof googleLoginSchema>;
 export default {
     signUpSchema,
     confirmEmailSchema,
-    signInSchema
+    signInSchema,
+    resendOtpSchema,
+    googleLoginSchema
 }
