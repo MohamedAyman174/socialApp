@@ -22,3 +22,6 @@ export const AWS_ACCESS_KEY_ID = process.env.AWS_ACCESS_KEY_ID || "";
 export const AWS_SECRET_ACCESS_KEY = process.env.AWS_SECRET_ACCESS_KEY || "";
 export const S3_BUCKET_NAME = process.env.S3_BUCKET_NAME || "";
 export const APPLICATION_NAME = process.env.APPLICATION_NAME || "social-app";
+export const FIREBASE_PROJECT_ID = process.env.FIREBASE_PROJECT_ID || "";
+export const FIREBASE_CLIENT_EMAIL = process.env.FIREBASE_CLIENT_EMAIL || "";
+export const FIREBASE_PRIVATE_KEY = process.env.FIREBASE_PRIVATE_KEY || "";

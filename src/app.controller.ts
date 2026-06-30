@@ -10,6 +10,10 @@ import authRouter from "./modules/auth/auth.controller";
 import { checkDBConnection } from "./DB/connectionDB";
 import RedisService from "./common/service/redis.service";
 import uploadRouter from "./modules/upload/upload.controller";
+import postRouter from "./modules/post/post.controller";
+import commentRouter from "./modules/comment/comment.controller";
+import notificationRouter from "./modules/notification/notification.controller";
+
 
 const app: express.Application = express();
 const port = PORT;
@@ -22,6 +26,7 @@ const bootstrap = () => {
     app.use(helmet());
 
     app.use(cors());
+
 
     checkDBConnection();
     // RedisService.connect();
@@ -43,6 +48,9 @@ const bootstrap = () => {
     
     app.use("/auth", authRouter);  
     app.use("/upload", uploadRouter);
+    app.use("/posts", postRouter);
+    app.use("/comments", commentRouter);
+    app.use("/notifications", notificationRouter);
 
     app.use("{/*demo}", (req: Request, res: Response, next: NextFunction) => {
        throw new AppError(`URL ${req.originalUrl} with method ${req.method} not found`, 404);

@@ -20,10 +20,12 @@ export interface IUser {
     confirmed?: boolean;
     createdAt: Date;
     updatedAt: Date;
+    fcmTokens?: string[];
 }
 
 const userSchema = new mongoose.Schema<IUser>(
     {
+        
         firstName: {
             type: String,
             required: true,
@@ -88,14 +90,18 @@ const userSchema = new mongoose.Schema<IUser>(
             type: Boolean,
             default: false,
         },
+        fcmTokens: [{ type: String }],
     },
+    
     {
         timestamps: true,
         strict: true,
         strictQuery: true,
         toJSON: { virtuals: true },
         toObject: { virtuals: true },
-    }
+    },
+    
+    
 );
 
 userSchema.virtual('fullName').get(function () {
